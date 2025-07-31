@@ -1,0 +1,2 @@
+tComment.vba: call delete('/home/cmplr/usr4/vsripath/.vim/doc/tComment.txt')|call delete('/home/cmplr/usr4/vsripath/.vim/plugin/tComment.vim')|call delete('/home/cmplr/usr4/vsripath/.vim/autoload/tcomment.vim')
+tcomment.vba: call delete('/home/cmplr/usr4/vsripath/.vim/doc/tcomment.txt')|call delete('/home/cmplr/usr4/vsripath/.vim/plugin/tcomment.vim')|call delete('/home/cmplr/usr4/vsripath/.vim/autoload/tcomment.vim')

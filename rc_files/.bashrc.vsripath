@@ -1,0 +1,277 @@
+# .bashrc
+# Author: Sarat Sreepathi (admin@sarats.com)
+# Author: Vamsi Sripathi (admin@vamsis.com)
+# $LastChangedBy: vamsi $
+# $LastChangedDate: 2011-10-15 16:00:48 -0700 (Sat, 15 Oct 2011) $
+# $LastChangedRevision: 74 $
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# --------------------------------------------------------------
+# Color the shell prompt
+# --------------------------------------------------------------
+# Root's prompt (bold red)
+if [ "$(whoami)" == 'root' ]; then
+ export PS1='\[\e[1;31m\][\u@\h \w]\$\[\e[0m\] '
+else
+# Normal Users prompt (light green)
+ export PS1='\[\e[0;32m\][\u@\h \w]\$\[\e[0m\] '
+# if you need bold green use 
+# export PS1='\[\e[1;32m\][\u@\h \w]\$\[\e[0m\] '
+fi
+
+# --------------------------------------------------------------
+# User specific aliases
+# --------------------------------------------------------------
+# If any alias definitions are present in ~/.alias
+# test -s ~/.alias && . ~/.alias || true
+
+# Find if htop is installed and then set as alias to top
+which htop &> /dev/null
+if [ $? -eq 0 ]; then
+	alias top="htop"
+fi
+
+# Find if colordiff is installed and then set as alias to diff
+which colordiff &> /dev/null
+if [ $? -eq 0 ]; then
+	alias diff="colordiff"
+fi
+
+# Find if colorsvn is installed and then set as alias to svn
+which colorsvn &> /dev/null
+if [ $? -eq 0 ]; then
+	alias svn="colorsvn"
+fi
+
+# Find if pinfo is installed and then set as alias to info
+# pman displays the man pages using pinfo. Use pman if you'd like to naviagate across man pages.
+which pinfo &> /dev/null
+if [ $? -eq 0 ]; then
+	alias info="pinfo"
+	alias pman="pinfo -m"
+fi
+
+# If man pages appear garbled, try this
+# alias man='LANG=C man' 
+# Preserve line colors (ANSI) when piped from colordiff
+alias less="less -R "
+alias ..="cd .."
+alias c="clear"
+alias ls="ls --color=auto"
+alias l="ls -lh" 
+alias lr="ls -lthr" 
+alias ltr="ls -ltr" 
+alias ltrh="ls -lthr" 
+alias lt="ls -ltrh | tail"
+alias vi="vim"
+alias screen="screen -RD"
+alias grep="grep --color=auto"
+alias xterm='xterm -fb "" -bg black -fg gray '
+alias +="pushd"
+alias -- -="popd"
+
+# Helper aliases for development
+alias mcm="make clean; make"
+# ctags -R recursively scans current dir and generates tags
+# cscope recursively scans and builds cscope.out database
+# -q generates an inverted index (useful for large projects)
+alias cts="ctags -R; cscope -R -b -q"
+# If man pages appear garbled, try this
+# alias man='LANG=C man' 
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# SHELL options
+# --------------------------------------------------------------
+set autolist;
+# The cmdhist shell option,  if enabled, causes the shell to attempt 
+# to save each line of a multi-line command in the same history entry,
+# adding  semicolons  where necessary  to preserve syntactic correctness
+shopt -s cmdhist
+# Automatically change to a directory when you forgot to enter cd 
+# shopt -s autocd
+# several extended pattern matching operators are recognized
+shopt -s extglob
+# Append history to existing files instead of overwriting
+shopt -s histappend 
+# Enable Host autocomplete (more about host autocomplete in SSH Section below)
+shopt -s hostcomplete
+set bell-style none
+# If you need vi kind of line editing in shell
+# set -o vi
+# To remove annoying mail checking message (mail mostly not used)
+unset MAILCHECK
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# Environment variables
+# --------------------------------------------------------------
+export PATH=${HOME}/bin:${PATH}
+export EDITOR=/usr/bin/vim
+
+# Syntax highlighting in man pages
+# Find if most is installed and then set it as PAGER. This will
+# do syntax highlighting in man pages.
+# which most &> /dev/null
+# if [ $? -eq 0 ]; then
+	# export PAGER=most
+# fi
+
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# HISTORY options
+# --------------------------------------------------------------
+# Don't store duplicate adjacent items in the history
+export HISTCONTROL=ignoreboth
+export HISTFILESIZE=5000
+# Ignore duplicate entries, just ls commands, edit, hsearch calls
+# and anything that starts with a space
+export HISTIGNORE="&:ls:[bf]g:exit:[ ]*:hsearch*"
+# Tip: history -a appends history
+# Tip: history -c clears history
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# Helpful functions
+# --------------------------------------------------------------
+# Change current directory to "n" levels up(taken as argument), defaults to 1 level above.
+up()
+{
+if [[ -z "$1" ]]; then
+    dest="../"
+else
+    dest=""
+    for ((i=0;i<$1;i++));
+do
+    dest="$dest../"
+done
+fi
+cd $dest; 
+}
+
+# List directories present in directories given on command-line
+lsd ()
+{
+    ls -l $* | grep ^d
+}
+
+# Search history for specific word/phrase
+hsearch()
+{
+	history | grep "$*"
+}
+
+svdiff()
+{
+	svn diff $@ | diff 
+}
+
+hgdiff()
+{
+	hg diff $@ | diff 
+}
+
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# SSH Stuff
+# --------------------------------------------------------------
+# Managing SSH Agent on Login and Logout
+# Adapted from settings on Neptune cluster
+
+# sarat@master:~> cat .login 
+# if ( ! $?SSH_AUTH_SOCK ) then
+#	eval `ssh-agent`
+# endif
+
+# sarat@master:~> cat .logout
+# if ( $?SSH_AGENT_PID && "$SHLVL" == "1" ) then
+#   eval `ssh-agent -k` || kill -HUP $SSH_AGENT_PID
+# endif
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+# Hostname autocompletion
+# --------------------------------------------------------------
+if [ -f ${HOME}/.ssh/known_hosts ]; then
+	awk 'BEGIN { FS=",| ";} { print $1 } ' ${HOME}/.ssh/known_hosts > ${HOME}/.ssh/my_hostlist
+    # Override the default from /etc/hosts
+	export HOSTFILE=${HOME}/.ssh/my_hostlist
+
+	knownhosts=$( awk '{ print $1 }' ${HOME}/.ssh/my_hostlist )
+	complete -o default -W "${knownhosts[*]}" ssh
+	complete -o default -W "${knownhosts[*]}" scp
+	complete -o default -W "${knownhosts[*]}" myssh
+fi
+# --------------------------------------------------------------
+
+_vim_ctags() 
+{
+    local cur prev
+
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    case "${prev}" in
+        -t)
+            # Avoid the complaint message when no tags file exists
+            if [ ! -r ./tags ]
+            then
+                return
+            fi
+
+            # Escape slashes to avoid confusing awk
+            cur=${cur////\\/}
+
+            COMPREPLY=( $(compgen -W "`awk -v ORS=" "  "/^${cur}/ { print \\$1 }" tags`" ) )
+            ;;
+        *)
+            # Perform usual completion mode
+            ;;
+    esac
+}
+
+# Files matching this pattern are excluded
+excludelist='*.@(o|O|so|SO|so.!(conf)|SO.!(CONF)|a|A|rpm|RPM|deb|DEB|gif|GIF|jp?(e)g|JP?(E)G|mp3|MP3|mp?(e)g|MP?(E)G|avi|AVI|asf|ASF|ogg|OGG|class|CLASS)'
+
+complete -F _vim_ctags -f -X "${excludelist}" vi vim gvim rvim view rview rgvim rgview gview cat
+
+<<'COMMENT'
+
+The following are some of the efforts to do ssh hostname autocomplete but the best option is to set HOSTFILE to list of hostnames as done above
+
+_compssh ()
+{
+	cur=${COMP_WORDS[COMP_CWORD]};
+#	COMPREPLY=($(compgen -W '$(/bin/cat ~/hosts_list) --all --schema' -- $cur))
+	if [ -f ${HOME}/.ssh/hostslist ]; then
+		knownhosts=${HOME}/.ssh/hostslist;
+	else
+		knownhosts=$(cat ${HOME}/.ssh/known_hosts | awk 'BEGIN { FS=",| ";} { print $1 } ' );
+	fi
+	COMPREPLY=($(compgen -W '${knownhosts} --all --schema' -- $cur));
+}
+ complete -F _compssh ssh
+
+COMMENT
+# --------------------------------------------------------------
+
+# Intel Environment
+#export http_proxy=http://proxy.jf.intel.com:911
+#export ftp_proxy=http://proxy.jf.intel.com:911
+# export PATH=/opt/intel/mic/bin:${PATH}
+export PATH=$PATH:/rdrive/linux/tools:/rdrive/linux/bin
+export ICS_START=/ics/itools/unx/bin
+#source $ICS_START/icssetup.sh
+export PATH=/usr/local/cuda-5.5/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-5.5/lib64:$LD_LIBRARY_PATH
+
+# export PATH=$HOME/python/Python-2.7.12/:$PATH
+# export PYTHONPATH=$HOME/python/Python-2.7.12/
+# export PATH=$HOME/.local/bin:$PATH

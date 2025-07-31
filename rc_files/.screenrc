@@ -1,0 +1,49 @@
+# Author: Sarat Sreepathi (admin@sarats.com)
+# $LastChangedBy: vamsi $
+# $LastChangedDate: 2011-10-15 16:00:48 -0700 (Sat, 15 Oct 2011) $
+# $LastChangedRevision: 74 $
+
+# don't display the copyright page
+startup_message off
+
+# disable visual bell
+vbell off
+
+altscreen on
+
+# Hardstatus line at bottom of screen
+# hardstatus alwayslastline
+# hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{=kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}] [ %D %m/%d/%y | %C %A ]'
+# hardstatus string '%{= kG}[%= %{=kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}] [ %m/%d/%y | %C %A ]'
+# hardstatus string '%{= Kd} %{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} %H%{KW}|%{KY}%101`%{KW}|%D %M %d %Y%{= Kc} %C%A%{-}'
+caption always "%{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw %=%{mk}@%H %{yk}%D %{ck}%M%{wk} %{ck}%d %{gk}%C %A"
+ 
+
+# detach on hangup
+autodetach on
+
+# Run everything in UTF-8
+defutf8 on
+
+# Scrollback size
+defscrollback 5000
+
+# Each of the following creates a new terminal tab/window in screen
+# Uncomment as many of the following as you wish
+# You have to chdir before you open a tab/window for it to 
+# open at the desired location
+# chdir "$HOME"
+# screen -t home 0 bash
+# screen -t root 2 sudo su -
+# chdir "$HOME/shared"
+# screen -t shared 0 bash
+# select 0
+
+bindkey "^[[1;5D" prev  # change window with ctrl-left
+bindkey "^[[1;5C" next  # change window with ctrl-right
+bindkey "^[[1;5A" copy  # Enter copy mode with ctrl-up
+
+# putty bindings
+bindkey "^[[D" prev
+bindkey "^[[C" next
+bindkey "^[[A" copy
